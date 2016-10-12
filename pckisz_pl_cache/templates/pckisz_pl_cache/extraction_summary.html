@@ -1,0 +1,23 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block content %}
+    <a href="#" onclick="window.history.back();">{% trans 'Back' %}</a>
+
+    <p>
+    {% if added|length %}
+        {% trans 'Added' %} {{ added|length }} {% trans 'items' %}.
+    {% else %}
+        {% trans 'No new items were found' %}
+    {% endif %}
+    </p>
+{#    <br><br>#}
+{#    {% for item in added %}#}
+{#        <ul>#}
+{#            {% for name, value in item %}#}
+{#                <li><strong>{{ name }}</strong> => <pre>{{ value }}</pre></li>#}
+{#            {% endfor %}#}
+{#        </ul>#}
+{#        <br>#}
+{#    {% endfor %}#}
+{% endblock %}

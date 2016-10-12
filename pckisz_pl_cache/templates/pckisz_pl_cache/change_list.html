@@ -1,0 +1,32 @@
+{% extends 'admin/change_list.html' %}
+{% load i18n admin_urls static admin_list %}
+
+{% block object-tools %}
+    <ul class="object-tools">
+      {% block object-tools-items %}
+        {% if has_add_permission %}
+        <li>
+          {% url cl.opts|admin_urlname:'extract' as extract_url %}
+          <a href="#" onclick="confirmScrape()"">
+            {% blocktrans with cl.opts.verbose_name as name %}Extract {{ name }}{% endblocktrans %}
+          </a>
+        </li>
+        <li>
+          {% url cl.opts|admin_urlname:'add' as add_url %}
+          <a href="{% add_preserved_filters add_url is_popup to_field %}" class="addlink">
+            {% blocktrans with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktrans %}
+          </a>
+        </li>
+        {% endif %}
+      {% endblock %}
+    </ul>
+
+    <script>
+        function confirmScrape() {
+            var input = confirm("{% trans 'Extraction can take several minutes. Press OK to begin. Be patient. When the task is finished, you will be redirected to a summary page.' %}");
+            if (input === true) {
+                window.location = '{% add_preserved_filters extract_url is_popup to_field %}extract';
+            }
+        }
+    </script>
+{% endblock %}
