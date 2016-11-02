@@ -19,10 +19,6 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
 
-#: pckisz_pl_cache/apps.py:7
-msgid "pckisz.pl cache"
-msgstr "pckisz.pl cache"
-
 #: pckisz_pl_cache/models.py:8
 msgid "identifier"
 msgstr "identyfikator"

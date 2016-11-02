@@ -1,0 +1,1 @@
+default_app_config = 'pckisz_pl_cache.apps.PckiszPlCacheConfig'
