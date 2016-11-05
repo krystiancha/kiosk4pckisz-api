@@ -11,5 +11,5 @@ class ScreeningList(generics.ListAPIView):
 
 
 class MovieList(generics.ListAPIView):
-    queryset = Movie.objects.all()
+    queryset = Movie.objects.filter(screening__start__gte=now()).distinct()
     serializer_class = MovieSerializer
