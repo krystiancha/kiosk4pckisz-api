@@ -6,7 +6,7 @@ from pckisz_pl_cache.serializers import ScreeningSerializer, MovieSerializer
 
 
 class ScreeningList(generics.ListAPIView):
-    queryset = Screening.objects.filter(start__gte=now())
+    queryset = Screening.objects.filter(start__gte=now()).prefetch_related('movie')
     serializer_class = ScreeningSerializer
 
 
