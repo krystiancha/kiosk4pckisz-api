@@ -4,12 +4,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from pckisz_pl_cache.models import Screening, Movie
-from pckisz_pl_cache.serializers import ScreeningSerializer, MovieSerializer
+from pckisz_pl_cache.serializers import OldScreeningSerializer, ScreeningSerializer, MovieSerializer
 
 
 class ScreeningList(generics.ListAPIView):
     queryset = Screening.objects.filter(start__gte=now()).prefetch_related('movie')
-    serializer_class = ScreeningSerializer
+    serializer_class = OldScreeningSerializer
 
 
 class MovieList(generics.ListAPIView):
