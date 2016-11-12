@@ -10,8 +10,9 @@ class MovieSerializer(serializers.ModelSerializer):
 
 
 class ScreeningSerializer(serializers.ModelSerializer):
-    movie = MovieSerializer()
+    movie = serializers.PrimaryKeyRelatedField(read_only=True)
+    premiere = serializers.BooleanField()
 
     class Meta:
         model = Screening
-        filter = ('id', 'movie', 'start')
+        filter = ('id', 'movie', 'start', 'premiere', 'meeting')

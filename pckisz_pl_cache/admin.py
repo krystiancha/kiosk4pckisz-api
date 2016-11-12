@@ -45,9 +45,9 @@ class MovieAdmin(admin.ModelAdmin):
 @admin.register(Screening)
 class ScreeningAdmin(ExtractableAdmin):
     extraction_class = ScreeningExtractor
-    fields = ('id', 'movie', 'start')
-    list_display = ('movie', 'start')
-    list_filter = ('start', )
+    fields = ('id', 'movie', 'start', 'meeting')
+    list_display = ('movie', 'start', 'meeting')
+    list_filter = ('start', 'meeting')
     raw_id_fields = ['movie']
     readonly_fields = ['id']
     search_fields = ['id', 'movie__title', 'movie__description', 'movie__production']

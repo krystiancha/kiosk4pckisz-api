@@ -31,6 +31,8 @@ class Movie(Model):
 class Screening(Model):
     movie = models.ForeignKey(Movie, verbose_name=_('movie'))
     start = models.DateTimeField(_('start'))
+    meeting = models.BooleanField(_('meeting with the director'), default=False)
+    premiere = False
 
     def __str__(self):
         return (str(self.start) + ' ' + str(self.movie)) or self.id
