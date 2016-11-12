@@ -19,8 +19,10 @@ from django.contrib import admin
 from kiosk4pckisz import settings
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'', include('pckisz_pl_cache.urls'))
+    url(r'^api/', include([
+        url(r'^admin/', admin.site.urls),
+        url(r'', include('pckisz_pl_cache.urls'))
+    ]))
 ]
 
 if settings.DEBUG:
