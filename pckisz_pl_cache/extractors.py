@@ -94,7 +94,8 @@ class ScreeningExtractor(ListExtractor):
                     genre = find_between(span[1], '\r\n\tGatunek: ', ', Czas:')
                     duration = timedelta(minutes=int(find_between(span[1], 'Czas:', ' min.')))
                     try:
-                        yt_video_id = tree.xpath('//iframe[last()]/@src')[0].split('/')[-1]
+                        yt_video_id_dirty = tree.xpath('//iframe[last()]/@src')[0].split('/')[-1]
+                        yt_video_id = yt_video_id_dirty[:yt_video_id_dirty.find('?')]
                     except IndexError:
                         yt_video_id = ''
                     try:
