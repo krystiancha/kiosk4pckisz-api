@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-12 20:31+0200\n"
+"POT-Creation-Date: 2016-11-16 18:57+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,69 +19,82 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
 
-#: pckisz_pl_cache/models.py:8
+#: models.py:8
 msgid "identifier"
 msgstr "identyfikator"
 
-#: pckisz_pl_cache/models.py:15
+#: models.py:15
 msgid "title"
 msgstr "tytuł"
 
-#: pckisz_pl_cache/models.py:16
+#: models.py:16
 msgid "description"
 msgstr "opis"
 
-#: pckisz_pl_cache/models.py:17
+#: models.py:17
 msgid "poster"
 msgstr "plakat"
 
-#: pckisz_pl_cache/models.py:18
+#: models.py:18
 msgid "production"
 msgstr "produkcja"
 
-#: pckisz_pl_cache/models.py:19
+#: models.py:19
 msgid "genre"
 msgstr "gatunek"
 
-#: pckisz_pl_cache/models.py:20
+#: models.py:20
 msgid "duration"
 msgstr "czas trwania"
 
-#: pckisz_pl_cache/models.py:21
+#: models.py:21
 msgid "YouTube video id"
 msgstr "YouTube video id"
 
-#: pckisz_pl_cache/models.py:27 pckisz_pl_cache/models.py:32
+#: models.py:27 models.py:32
 msgid "movie"
 msgstr "film"
 
-#: pckisz_pl_cache/models.py:28
+#: models.py:28
 msgid "movies"
 msgstr "filmy"
 
-#: pckisz_pl_cache/models.py:33
+#: models.py:33
 msgid "start"
 msgstr "start"
 
-#: pckisz_pl_cache/models.py:39
+#: models.py:34
+msgid "end"
+msgstr "koniec"
+
+#: models.py:35
+msgid ""
+"This field is automatically determined based on start time and movie length."
+msgstr "To pole zostało automatycznie uzupełnione na podstawie pola start oraz długości filmu."
+
+#: models.py:37
+msgid "meeting with the director"
+msgstr "spotkanie z reżyserem"
+
+#: models.py:48
 msgid "screening"
 msgstr "projekcje"
 
-#: pckisz_pl_cache/models.py:40
+#: models.py:49
 msgid "screenings"
 msgstr "projekcje"
 
-#: pckisz_pl_cache/templates/pckisz_pl_cache/change_list.html:11
+#: templates/pckisz_pl_cache/change_list.html:11
 #, python-format
 msgid "Extract %(name)s"
 msgstr "Wyodrębnij %(name)s"
 
-#: pckisz_pl_cache/templates/pckisz_pl_cache/change_list.html:17
+#: templates/pckisz_pl_cache/change_list.html:17
 #, python-format
 msgid "Add %(name)s"
 msgstr "Dodaj %(name)s"
 
-#: pckisz_pl_cache/templates/pckisz_pl_cache/change_list.html:26
+#: templates/pckisz_pl_cache/change_list.html:26
 msgid ""
 "Extraction can take several minutes. Press OK to begin. Be patient. When the "
 "task is finished, you will be redirected to a summary page."
@@ -89,18 +102,18 @@ msgstr ""
 "Wyodrębnianie może potrwać kilka minut. Wciśnij OK aby rozpocząć. Bądź "
 "cierpliwy. Gdy zadanie zostanie zakończone, zobaczysz widok podsumowania."
 
-#: pckisz_pl_cache/templates/pckisz_pl_cache/extraction_summary.html:5
+#: templates/pckisz_pl_cache/extraction_summary.html:5
 msgid "Back"
 msgstr "Wróc"
 
-#: pckisz_pl_cache/templates/pckisz_pl_cache/extraction_summary.html:9
+#: templates/pckisz_pl_cache/extraction_summary.html:9
 msgid "Added"
 msgstr "Dodano"
 
-#: pckisz_pl_cache/templates/pckisz_pl_cache/extraction_summary.html:9
+#: templates/pckisz_pl_cache/extraction_summary.html:9
 msgid "items"
 msgstr "obiektów"
 
-#: pckisz_pl_cache/templates/pckisz_pl_cache/extraction_summary.html:11
+#: templates/pckisz_pl_cache/extraction_summary.html:11
 msgid "No new items were found"
 msgstr "Nie znaleziono nowych obiektów"

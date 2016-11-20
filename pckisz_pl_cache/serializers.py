@@ -23,4 +23,4 @@ class ScreeningSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Screening
-        filter = ('id', 'movie', 'start', 'premiere', 'meeting')
+        filter = ('id', 'movie', 'start', 'end', 'premiere', 'meeting')

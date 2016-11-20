@@ -8,18 +8,18 @@ from pckisz_pl_cache.serializers import OldScreeningSerializer, ScreeningSeriali
 
 
 class ScreeningList(generics.ListAPIView):
-    queryset = Screening.objects.filter(start__gte=now()).prefetch_related('movie')
+    queryset = Screening.objects.filter(start__gt=now()).prefetch_related('movie')
     serializer_class = OldScreeningSerializer
 
 
 class MovieList(generics.ListAPIView):
-    queryset = Movie.objects.filter(screening__start__gte=now()).distinct()
+    queryset = Movie.objects.filter(screening__start__gt=now()).distinct()
     serializer_class = MovieSerializer
 
 
 class AllList(APIView):
     def get(self, request, format=None):
-        screenings = Screening.objects.filter(start__gt=now()).prefetch_related('movie__screening_set')
+        screenings = Screening.objects.filter(end__gt=now()).prefetch_related('movie__screening_set')
 
         movies = set()
         screenings_today = []

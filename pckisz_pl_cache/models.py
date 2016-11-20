@@ -31,11 +31,18 @@ class Movie(Model):
 class Screening(Model):
     movie = models.ForeignKey(Movie, verbose_name=_('movie'))
     start = models.DateTimeField(_('start'))
+    end = models.DateTimeField(_('end'), blank=True, help_text=_(
+        'This field is automatically determined based on start time and movie length.'
+    ), null=True)
     meeting = models.BooleanField(_('meeting with the director'), default=False)
     premiere = False
 
     def __str__(self):
         return (str(self.start) + ' ' + str(self.movie)) or self.id
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        self.end = self.start + self.movie.duration
+        super().save(force_insert, force_update, using, update_fields)
 
     class Meta:
         verbose_name = _('screening')
