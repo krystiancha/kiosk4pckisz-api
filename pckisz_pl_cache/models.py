@@ -34,7 +34,7 @@ class Screening(Model):
     end = models.DateTimeField(_('end'), blank=True, help_text=_(
         'This field is automatically determined based on start time and movie length.'
     ), null=True)
-    meeting = models.BooleanField(_('meeting with the director'), default=False)
+    meeting = models.BooleanField(_('meeting'), default=False)
     premiere = False
 
     def __str__(self):

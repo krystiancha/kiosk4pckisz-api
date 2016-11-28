@@ -28,7 +28,7 @@ class AllList(APIView):
             movies.add(screening.movie)
             if screening == screening.movie.screening_set.first():
                 screening.premiere = True
-            if screening.start.day == now().day:
+            if screening.start.date() == now().date():
                 screenings_today += [screening]
             else:
                 screenings_later += [screening]

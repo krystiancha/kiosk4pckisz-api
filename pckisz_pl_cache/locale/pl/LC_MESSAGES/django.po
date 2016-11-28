@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-16 18:57+0100\n"
+"POT-Creation-Date: 2016-11-28 19:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -70,11 +70,13 @@ msgstr "koniec"
 #: models.py:35
 msgid ""
 "This field is automatically determined based on start time and movie length."
-msgstr "To pole zostało automatycznie uzupełnione na podstawie pola start oraz długości filmu."
+msgstr ""
+"To pole zostało automatycznie uzupełnione na podstawie pola start oraz "
+"długości filmu."
 
 #: models.py:37
-msgid "meeting with the director"
-msgstr "spotkanie z reżyserem"
+msgid "meeting"
+msgstr "spotkanie"
 
 #: models.py:48
 msgid "screening"
