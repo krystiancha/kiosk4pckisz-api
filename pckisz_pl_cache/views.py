@@ -21,11 +21,12 @@ class AllList(APIView):
     def get(self, request, format=None):
         screenings = Screening.objects.filter(end__gt=now()).prefetch_related('movie__screening_set')
 
-        movies = set()
+        movies = []
         screenings_today = []
         screenings_later = []
         for screening in screenings:
-            movies.add(screening.movie)
+            if screening.movie not in movies:
+                movies += [screening.movie]
             if screening == screening.movie.screening_set.first():
                 screening.premiere = True
             if screening.start.date() == now().date():
