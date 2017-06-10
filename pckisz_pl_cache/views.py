@@ -7,14 +7,18 @@ from pckisz_pl_cache.models import Screening, Movie
 from pckisz_pl_cache.serializers import OldScreeningSerializer, ScreeningSerializer, MovieSerializer
 
 
-class ScreeningList(generics.ListAPIView):
-    queryset = Screening.objects.filter(start__gt=now()).prefetch_related('movie')
+class ScreeningList(generics.ListAPIView): # depreciated
     serializer_class = OldScreeningSerializer
 
+    def get_queryset(self):
+        return Screening.objects.filter(start__gt=now()).prefetch_related('movie')
 
-class MovieList(generics.ListAPIView):
-    queryset = Movie.objects.filter(screening__start__gt=now()).distinct()
+
+class MovieList(generics.ListAPIView): # depreciated
     serializer_class = MovieSerializer
+
+    def get_queryset(self):
+        return Movie.objects.filter(screening__start__gt=now()).distinct()
 
 
 class AllList(APIView):
