@@ -2,15 +2,22 @@
 {% load i18n static %}
 
 {% block content %}
-    <a href="#" onclick="window.history.back();">{% trans 'Back' %}</a>
+    <a href="#" onclick="window.history.back();">{% trans 'back' as rel %}{{ rel|title }}</a>
 
     <p>
     {% if added|length %}
-        {% trans 'Added' %} {{ added|length }} {% trans 'items' %}.
+        {% trans 'added' as rel %}{{ rel|title }} {{ added|length }} {% trans 'items' %}.
     {% else %}
         {% trans 'No new items were found' %}
     {% endif %}
     </p>
+
+    <p>{% trans 'failed' as rel %}{{ rel|title }}:</p>
+    <ul>
+        {% for name, link in failed %}
+        <li><strong>{{ name }}</strong>: <a href="{{ link }}">{{ link }}</a></li>
+        {% endfor %}
+    </ul>
 {#    <br><br>#}
 {#    {% for item in added %}#}
 {#        <ul>#}

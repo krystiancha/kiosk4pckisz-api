@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-28 19:48+0100\n"
+"POT-Creation-Date: 2018-08-27 17:44+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -105,17 +105,21 @@ msgstr ""
 "cierpliwy. Gdy zadanie zostanie zakończone, zobaczysz widok podsumowania."
 
 #: templates/pckisz_pl_cache/extraction_summary.html:5
-msgid "Back"
-msgstr "Wróc"
+msgid "back"
+msgstr "wróć"
 
 #: templates/pckisz_pl_cache/extraction_summary.html:9
-msgid "Added"
-msgstr "Dodano"
+msgid "added"
+msgstr "dodano"
 
 #: templates/pckisz_pl_cache/extraction_summary.html:9
 msgid "items"
-msgstr "obiektów"
+msgstr "projekcji"
 
 #: templates/pckisz_pl_cache/extraction_summary.html:11
 msgid "No new items were found"
 msgstr "Nie znaleziono nowych obiektów"
+
+#: templates/pckisz_pl_cache/extraction_summary.html:15
+msgid "failed"
+msgstr "niepowodzenia"

@@ -26,9 +26,12 @@ class ExtractableAdmin(admin.ModelAdmin):
         if not request.user.is_authenticated:
             return redirect('%s?next=%s' % ('/admin/login/', request.path[:-8]))
 
+        added, failed = self.extraction_class().extract()
+
         context = dict(
             self.admin_site.each_context(request),
-            added=self.extraction_class().extract(),
+            added=added,
+            failed=failed,
         )
         return TemplateResponse(request, "pckisz_pl_cache/extraction_summary.html", context)
 
