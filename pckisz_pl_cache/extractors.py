@@ -1,149 +1,150 @@
-from abc import ABCMeta, abstractmethod
 from datetime import datetime, timedelta
+from time import strptime, mktime
+from typing import List, Tuple
 
-import pytz
 import requests
-from contextlib import suppress
+from bs4 import BeautifulSoup
+from django.utils.timezone import now, make_aware
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.timezone import now
-from lxml import html
 
-from pckisz_pl_cache.models import Screening, Movie
+from pckisz_pl_cache.models import Movie, Screening
 
 
-class Extractor(metaclass=ABCMeta):
-    base_url = 'http://www.pckisz.pl'
+class ExtractionException(Exception):
+    def __init__(self, msg, movie_title=None, movie_link=None, movie_showtimes_raw=None) -> None:
+        super().__init__()
+        self.msg = msg
+        self.movie_title = movie_title
+        self.movie_link = movie_link
+        self.movie_showtimes_raw = movie_showtimes_raw
 
-    @property
-    @abstractmethod
-    def relative_url(self):
-        pass
+    def __str__(self) -> str:
+        return '{} ({}): {}'.format(self.movie_title or '', self.movie_link or '', self.msg)
 
-    def __init__(self):
 
-        self.added = []
-        self.failed = []
+class NoFutureShows(Exception):
+    pass
 
-        self.tree = []
-        self.populate_tree()
+
+class ScreeningExtractor:
+    BASE_URL = 'http://localhost:8080'
+    PATH = '/filmy,80'
+
+    @classmethod
+    def __call__(cls, *args, **kwargs):
+        cls.extract()
+
+    @classmethod
+    def extract(cls):  # throws: requests.RequestException
+        r = requests.get('{}{}'.format(cls.BASE_URL, cls.PATH))
+        soup = BeautifulSoup(r.text)
+        movies, failed_movies = cls._parse_movies_from_list(soup)
+
+        return movies, failed_movies
+
+    @classmethod
+    def _parse_movies_from_list(cls, soup):
+        box_g_page = soup.find(class_='box-g-page')
+        if not box_g_page:
+            raise ExtractionException('box-g-page not found')
+        movie_list = box_g_page.find(class_='row')
+        if not movie_list:
+            raise ExtractionException('box-g-page row not found')
+        a_tags = movie_list.find_all('a', recursive=False)
+
+        movies: List[Movie] = []
+        failed_movies: List[Tuple[str, str]] = []
+        for a_tag in a_tags:
+            try:
+                movie_raw = cls._parse_movie_from_list(a_tag)
+                if movie_raw:
+                    movie = cls._extract_movie_details(*movie_raw)
+                    movies.append(movie)
+            except NoFutureShows:
+                break
+            except ExtractionException:
+                link = a_tag.get('href')
+
+                title = ''
+                details_div = a_tag.find('div')
+                if details_div:
+                    title_h3 = a_tag.find('h3')
+                    if title_h3:
+                        title = title_h3.text
+
+                failed_movies.append((title, link))
+
+        return movies, failed_movies
+
+    @classmethod
+    def _parse_movie_from_list(cls, a_tag, ignore_past=False):
+        details_div = a_tag.find('div')
+        if not details_div:
+            raise ExtractionException('div not found', )
+        title_h3 = details_div.find('h3')
+        if not title_h3:
+            raise ExtractionException('h3 not found')
+        title = title_h3.text
+        shows_span = details_div.find('span', class_='date')
+        if not shows_span:
+            raise ExtractionException('showtimes not found')
+        showdays_raw = shows_span.text.split('  |  ')
+        if showdays_raw == ['']:
+            raise ExtractionException('could not parse showtimes')
+        if showdays_raw[-1] == '':
+            showdays_raw.pop(-1)
+        showtimes = []
+        for showday_raw in showdays_raw:
+            date_raw, showtimes_raw = showday_raw.split(' - ')
+            for showtime_raw in showtimes_raw.split(', '):
+                showtime = datetime.fromtimestamp(
+                    mktime(strptime('{} {}'.format(date_raw, showtime_raw), '%Y.%m.%d %H:%M')))
+                showtime = make_aware(showtime)
+                if showtime > now() or ignore_past:
+                    showtimes.append(showtime)
+        if showtimes:
+            link = a_tag.get('href')
+            return title, link, showtimes
+        else:
+            raise NoFutureShows
+
+    @classmethod
+    def _extract_movie_details(cls, title, link, showtimes):
+        r = requests.get('{}{}'.format(cls.BASE_URL, link))
+        soup = BeautifulSoup(r.text)
+
+        box_g_page = soup.find(class_='box-g-page')
+        if not box_g_page:
+            raise ExtractionException('box-g-page not found', title, link)
+        poster_img = box_g_page.find('img')
+        details_span = box_g_page.find('span',
+                                       style='display:block; position:relative; padding-left:18px; line-height:145%;',
+                                       recursive=False)
 
         try:
-            self.box_g_page = self.tree.xpath('//div[@class=\'box-g-page\']')[0]
-        except IndexError:
-            pass  # TODO: handle
+            movie = Movie.objects.get(
+                title=title,
+                description=''.join(map(lambda p_tag: p_tag.text, box_g_page.find_all('p', recursive=False))),
+                poster='{}{}'.format(cls.BASE_URL, poster_img.get('src')) if poster_img else '',
+                production=find_between(details_span.text, 'Produkcja:', '\r\n\t').strip(),
+                genre=find_between(details_span.text, 'Gatunek:', ', Czas').strip(),
+                duration=timedelta(minutes=float(find_between(details_span.text, 'Czas:', 'min').strip())),
+            )
+        except ObjectDoesNotExist:
+            movie = Movie(
+                title=title,
+                description=''.join(map(lambda p_tag: p_tag.text, box_g_page.find_all('p', recursive=False))),
+                poster='{}{}'.format(cls.BASE_URL, poster_img.get('src')) if poster_img else '',
+                production=find_between(details_span.text, 'Produkcja:', '\r\n\t').strip(),
+                genre=find_between(details_span.text, 'Gatunek:', ', Czas').strip(),
+                duration=timedelta(minutes=float(find_between(details_span.text, 'Czas:', 'min').strip())),
+            )
 
-    def populate_tree(self):
-        self.tree = html.fromstring(requests.get(self.url(self.relative_url)).content)
+            movie.save()
 
-    def url(self, relative_url):
-        return self.base_url + relative_url
-
-    @abstractmethod
-    def extract(self):
-        pass
-
-
-class ListExtractor(Extractor, metaclass=ABCMeta):
-    def __init__(self):
-        super().__init__()
-
-        with suppress(IndexError):
-            self.row = self.box_g_page.xpath('div[@class=\'row\']')[0]
-            self.anchors = self.row.xpath('a')
-            self.styles = self.row.xpath('div[@class=\'col-xs-6 col-sm-5 col-md-4 col-lg-3\']/a/@style')
-            self.titles = self.row.xpath('a/div[@class=\'col-xs-6 col-sm-7 col-md-8 col-lg-9\']/h3/text()')
-            self.descriptions = self.row.xpath('//div[@class=\'a-txt\']/text()')
-            self.items = []
-            for idx, anchor in enumerate(self.anchors):
-                self.items += [
-                    (
-                        self.url(anchor.xpath('@href')[0]),
-                        self.url(self.styles[idx][22:self.styles[idx].find('\')')]),
-                        self.titles[idx],
-                        self.descriptions[idx].strip().replace(' ...', '...'),
-                        anchor.xpath(
-                            'div[@class=\'col-xs-6 col-sm-7 col-md-8 col-lg-9\']/span[@class=\'date small\']/text()'
-                        ),
-                    )
-                ]
-
-
-class ScreeningExtractor(ListExtractor):
-    relative_url = '/filmy'
-
-    def __init__(self):
-        super().__init__()
-
-    def parse_item(self, item):
-        movie_exists = False
-
-        try:
-            for start_str in reversed(item[4][0].split('\xa0 | \xa0')[:-1]):
-                start_strs = start_str.split(' - ')
-                date_str = start_strs[0]
-                time_strs = start_strs[1].split(', ')
-                for time_str in time_strs:
-                    naive = datetime.strptime(date_str + ' ' + time_str, '%Y.%m.%d %H:%M')
-                    start = pytz.timezone('Europe/Warsaw').localize(naive, is_dst=None)
-                    if now() > start:
-                        return
-                    if not movie_exists:
-                        tree = html.fromstring(requests.get(item[0]).content)
-                        box_g_page = tree.xpath('//div[@class=\'box-g-page\']')[0]
-                        description = '\n'.join(box_g_page.xpath('p/text()')).strip()
-                        span = tree.xpath('/html/body/div[2]/div/div[3]/div[2]/div/div/span[2]/text()')
-                        production = span[0][11:]
-                        genre = find_between(span[1], '\r\n\tGatunek: ', ', Czas:')
-                        duration = timedelta(minutes=int(find_between(span[1], 'Czas:', ' min.')))
-                        try:
-                            yt_video_id_dirty = tree.xpath('//iframe[last()]/@src')[0].split('/')[-1]
-                            yt_video_id = yt_video_id_dirty[:yt_video_id_dirty.find('?')]
-                        except IndexError:
-                            yt_video_id = ''
-                        try:
-                            movie = Movie.objects.get(
-                                title=item[2],
-                                description=description,
-                                poster=item[1],
-                                production=production,
-                                genre=genre,
-                                duration=duration,
-                                yt_video_id=yt_video_id
-                            )
-                            movie_exists = True
-                        except ObjectDoesNotExist:
-                            movie = Movie(
-                                title=item[2],
-                                description=description,
-                                poster=item[1],
-                                production=production,
-                                genre=genre,
-                                duration=duration,
-                                yt_video_id=yt_video_id
-                            )
-                            movie.save()
-                    if not Screening.objects.filter(
-                        movie=movie,
-                        start=start
-                    ).exists():
-                        self.added += [Screening(
-                            movie=movie,
-                            start=start
-                        )]
-                        self.added[-1].save()
-        except IndexError:
-            pass
-            self.failed.append((item[2], item[0]))
-
-    def extract(self):
-
-        self.added = []
-        self.failed = []
-
-        for item in self.items:
-            self.parse_item(item)
-
-        return self.added, self.failed
+        for showtime in showtimes:
+            show = Screening(movie=movie, start=showtime)
+            show.save()
 
 
 def find_between(s, first, last):

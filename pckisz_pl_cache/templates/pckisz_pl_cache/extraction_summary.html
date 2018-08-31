@@ -5,8 +5,8 @@
     <a href="#" onclick="window.history.back();">{% trans 'back' as rel %}{{ rel|title }}</a>
 
     <p>
-    {% if added|length %}
-        {% trans 'added' as rel %}{{ rel|title }} {{ added|length }} {% trans 'items' %}.
+    {% if movies|length %}
+        {% trans 'movies' as rel %}{{ rel|title }} {{ movies|length }} {% trans 'items' %}.
     {% else %}
         {% trans 'No new items were found' %}
     {% endif %}
@@ -14,12 +14,12 @@
 
     <p>{% trans 'failed' as rel %}{{ rel|title }}:</p>
     <ul>
-        {% for name, link in failed %}
-        <li><strong>{{ name }}</strong>: <a href="{{ link }}">{{ link }}</a></li>
+        {% for title, link in failed %}
+        <li><strong>{{ title }}</strong>: <a href="{{ link }}">{{ link }}</a></li>
         {% endfor %}
     </ul>
 {#    <br><br>#}
-{#    {% for item in added %}#}
+{#    {% for item in movies %}#}
 {#        <ul>#}
 {#            {% for name, value in item %}#}
 {#                <li><strong>{{ name }}</strong> => <pre>{{ value }}</pre></li>#}
