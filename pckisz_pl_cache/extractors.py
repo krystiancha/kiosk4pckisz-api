@@ -27,7 +27,7 @@ class NoFutureShows(Exception):
 
 
 class ScreeningExtractor:
-    BASE_URL = 'http://localhost:8080'
+    BASE_URL = 'http://pckisz.pl'
     PATH = '/filmy,80'
 
     @classmethod
