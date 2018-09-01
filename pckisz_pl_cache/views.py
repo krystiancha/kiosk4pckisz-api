@@ -26,28 +26,18 @@ class AllList(APIView):
         screenings = Screening.objects.filter(end__gt=now()).prefetch_related('movie__screening_set')
 
         movies = []
-        screenings_today = []
-        screenings_later = []
         for screening in screenings:
             if screening.movie not in movies:
                 movies += [screening.movie]
             if screening == screening.movie.screening_set.first():
                 screening.premiere = True
-            if screening.start.date() == now().date():
-                screenings_today += [screening]
-            else:
-                screenings_later += [screening]
 
-        screenings_today_serializer = ScreeningSerializer(screenings_today, many=True)
-        screenings_later_serializer = ScreeningSerializer(screenings_later, many=True)
+        screenings_serializer = ScreeningSerializer(screenings, many=True)
         movie_serializer = MovieSerializer(movies, many=True)
 
         return Response(
             {
                 'movies': movie_serializer.data,
-                'screenings': {
-                    'today': screenings_today_serializer.data,
-                    'later': screenings_later_serializer.data,
-                },
+                'screenings': screenings_serializer.data
             }
         )
