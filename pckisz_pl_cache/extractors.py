@@ -35,9 +35,9 @@ class ScreeningExtractor:
         cls.extract()
 
     @classmethod
-    def extract(cls):  # throws: requests.RequestException
+    def extract(cls):  # raises: requests.RequestException
         r = requests.get('{}{}'.format(cls.BASE_URL, cls.PATH))
-        soup = BeautifulSoup(r.text)
+        soup = BeautifulSoup(r.content)
         movies, failed_movies = cls._parse_movies_from_list(soup)
 
         return movies, failed_movies
@@ -111,7 +111,7 @@ class ScreeningExtractor:
     @classmethod
     def _extract_movie_details(cls, title, link, showtimes):
         r = requests.get('{}{}'.format(cls.BASE_URL, link))
-        soup = BeautifulSoup(r.text)
+        soup = BeautifulSoup(r.content)
 
         box_g_page = soup.find(class_='box-g-page')
         if not box_g_page:
@@ -145,6 +145,8 @@ class ScreeningExtractor:
         for showtime in showtimes:
             show = Screening(movie=movie, start=showtime)
             show.save()
+
+        return movie
 
 
 def find_between(s, first, last):

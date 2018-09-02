@@ -40,7 +40,7 @@ class ScreeningAdmin(admin.ModelAdmin):
 
         context = dict(
             self.admin_site.each_context(request),
-            added=movies,
+            movies=movies,
             failed=failed_movies,
         )
         return TemplateResponse(request, "pckisz_pl_cache/extraction_summary.html", context)

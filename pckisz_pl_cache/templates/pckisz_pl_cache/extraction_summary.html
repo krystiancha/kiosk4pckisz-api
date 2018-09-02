@@ -6,18 +6,20 @@
 
     <p>
     {% if movies|length %}
-        {% trans 'movies' as rel %}{{ rel|title }} {{ movies|length }} {% trans 'items' %}.
+        {% trans 'added' as rel %}{{ rel|title }} {{ movies|length }} {% trans 'items' %}.
     {% else %}
         {% trans 'No new items were found' %}
     {% endif %}
     </p>
 
+    {% if failed|length %}
     <p>{% trans 'failed' as rel %}{{ rel|title }}:</p>
     <ul>
         {% for title, link in failed %}
-        <li><strong>{{ title }}</strong>: <a href="{{ link }}">{{ link }}</a></li>
+        <li><strong>{{ title }}</strong>: <a href="http://pckisz.pl{{ link }}">http://pckisz.pl{{ link }}</a></li>
         {% endfor %}
     </ul>
+    {% endif %}
 {#    <br><br>#}
 {#    {% for item in movies %}#}
 {#        <ul>#}
